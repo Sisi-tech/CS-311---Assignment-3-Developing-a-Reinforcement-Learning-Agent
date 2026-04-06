@@ -10,9 +10,15 @@ import matplotlib.pyplot as plt
 
 # 1. Load Stock Data
 data = pd.read_csv("AAPL.csv")  # Replace with your CSV
-data['MA5'] = data['Close'].rolling(5).mean()
-data['MA20'] = data['Close'].rolling(20).mean()
-data = data.dropna().reset_index(drop=True)
+# data['MA5'] = data['Close'].rolling(5).mean()
+# data['MA20'] = data['Close'].rolling(20).mean()
+# data = data.dropna().reset_index(drop=True)
+
+import pandas as pd
+
+data = pd.read_csv("AAPL.csv")
+print("Number of rows:", len(data))
+print(data.head())
 
 
 # 2. Custom Trading Environment
@@ -37,7 +43,7 @@ class TradingEnv(gym.Env):
 
     def _get_state(self):
         row = self.data.iloc[self.current_step]
-        return np.array([row['Close'], row['MA5'], row['MA20'], self.shares, self.cash], dtype=np.float32)
+        return np.array([row['Close'], self.shares, self.cash], dtype=np.float32)
 
     def step(self, action):
         row = self.data.iloc[self.current_step]
@@ -100,7 +106,7 @@ TARGET_UPDATE = 10
 
 # 6. Initialize
 env = TradingEnv(data)
-state_dim = env.observation_space.shape[0]
+state_dim = 3
 action_dim = env.action_space.n
 
 policy_net = DQN(state_dim, action_dim)
